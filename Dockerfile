@@ -41,6 +41,7 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-enable opcache gd
 
 ## Install Xdebug
+RUN echo "Install xdebug by pecl"
 RUN yes | pecl install xdebug \
     && echo "zend_extension=$(find /usr/local/lib/php/extensions/ -name xdebug.so)" > /usr/local/etc/php/conf.d/xdebug.ini \
     && echo "xdebug.remote_enable=on" >> /usr/local/etc/php/conf.d/xdebug.ini \
@@ -53,9 +54,12 @@ RUN yes | pecl install xdebug \
 #COPY xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
 
 # Change TimeZone
+RUN echo "Set Timezone to Europe/Kiev"
 RUN echo "Europe/Kiev" > /etc/timezone
 
-# install composer globally
+# Install composer globally
+RUN echo "Install composer globally"
+
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin/ --filename=composer
 
 RUN printf "\n" | pecl install apcu-beta && echo extension=apcu.so > /usr/local/etc/php/conf.d/10-apcu.ini
@@ -128,10 +132,22 @@ RUN chmod +x phpdox.phar
 RUN mv phpdox.phar /usr/local/bin/phpdox
 RUN phpdox --version
 
+## Install wkhtmltopdf
+RUN echo "Install wkhtmltopdf and xvfb"
+RUN apt-get install -y \
+    wkhtmltopdf \
+    xvfb
+RUN chmod a+x /usr/local/bin/wkhtmltopdf
+RUN echo "Create xvfb wrapper for wkhtmltopdf and create special sh script"
+RUN touch /usr/local/bin/wkhtmltopdf
+RUN echo 'xvfb-run -a -s "-screen 0 640x480x16" wkhtmltopdf "$@"' > /usr/local/bin/wkhtmltopdf
+RUN chmod a+x /usr/local/bin/wkhtmltopdf.sh
+
 RUN usermod -u 1000 www-data
 
 CMD ["php-fpm"]
 
 EXPOSE 9000
 
+## Reconfigure timezones
 RUN  dpkg-reconfigure -f noninteractive tzdata
