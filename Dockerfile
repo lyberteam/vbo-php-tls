@@ -1,5 +1,5 @@
 # PHP7-FPM
-FROM php:fpm
+FROM php:7.0.12-fpm
 
 MAINTAINER Vendor="lyberteam" Description="This is a new php-fpm image(version for now 7.0.9)"
 
@@ -15,6 +15,8 @@ RUN apt-get update && apt-get install -y \
         libbz2-dev \
         php-pear \
         curl \
+	nodejs \
+	npm \
         git \
         unzip \
         mc \
@@ -137,11 +139,11 @@ RUN echo "Install wkhtmltopdf and xvfb"
 RUN apt-get install -y \
     wkhtmltopdf \
     xvfb
-RUN chmod a+x /usr/local/bin/wkhtmltopdf
 RUN echo "Create xvfb wrapper for wkhtmltopdf and create special sh script"
 RUN touch /usr/local/bin/wkhtmltopdf
+RUN chmod a+x /usr/local/bin/wkhtmltopdf
 RUN echo 'xvfb-run -a -s "-screen 0 640x480x16" wkhtmltopdf "$@"' > /usr/local/bin/wkhtmltopdf
-RUN chmod a+x /usr/local/bin/wkhtmltopdf.sh
+RUN chmod a+x /usr/local/bin/wkhtmltopdf
 
 RUN usermod -u 1000 www-data
 
