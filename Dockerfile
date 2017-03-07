@@ -1,8 +1,10 @@
 # PHP7-FPM
 FROM php:7.0.12-fpm
 
-MAINTAINER Vendor="lyberteam" Description="This is a new php-fpm image(version for now 7.0.9)"
-
+HEALTHCHECK --interval=5m --timeout=3s \
+ CMD curl -f http://localhost/ || exit 1
+LABEL Vendor="lyberteam"
+LABEL Description="This is a new php-fpm image(version for now 7.0.9)"
 LABEL version="1.0"
 
 RUN apt-get update && apt-get install -y \
