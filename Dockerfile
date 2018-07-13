@@ -8,6 +8,9 @@ LABEL Description="This is a new php-fpm image(version for now 7.0.9)"
 LABEL version="1.0"
 
 RUN apt-get update && apt-get install -y \
+        xvfb \
+        libfontconfig1 \
+        libxrender1 \
         libfreetype6-dev \
         libjpeg62-turbo-dev \
         libpng12-dev \
@@ -110,9 +113,9 @@ RUN pdepend --version
 
 ## Install PHPUNIT
 RUN echo "installing PHPUNIT"
-RUN wget https://phar.phpunit.de/phpunit.phar
-RUN chmod +x phpunit.phar
-RUN mv phpunit.phar /usr/local/bin/phpunit
+RUN wget https://phar.phpunit.de/phpunit-6.0.phar
+RUN chmod +x phpunit-6.0.phar
+RUN mv phpunit-6.0.phar /usr/local/bin/phpunit
 RUN phpunit --version
 
 ## Install PHPMD
@@ -124,9 +127,9 @@ RUN phpmd --version
 
 ## Install PHPCPD
 RUN echo "installing PHPCPD"
-RUN wget https://phar.phpunit.de/phpcpd.phar
-RUN chmod +x phpcpd.phar
-RUN mv phpcpd.phar /usr/local/bin/phpcpd
+RUN wget https://phar.phpunit.de/phpcpd-3.0.0.phar
+RUN chmod +x phpcpd-3.0.0.phar
+RUN mv phpcpd-3.0.0.phar /usr/local/bin/phpcpd
 RUN phpcpd --version
 
 ## Install PHPDOX
@@ -138,14 +141,11 @@ RUN phpdox --version
 
 ## Install wkhtmltopdf
 RUN echo "Install wkhtmltopdf and xvfb"
-RUN apt-get install -y \
-    wkhtmltopdf \
-    xvfb
-RUN echo "Create xvfb wrapper for wkhtmltopdf and create special sh script"
-RUN touch /usr/local/bin/wkhtmltopdf
-RUN chmod a+x /usr/local/bin/wkhtmltopdf
-RUN echo 'xvfb-run -a -s "-screen 0 640x480x16" wkhtmltopdf "$@"' > /usr/local/bin/wkhtmltopdf
-RUN chmod a+x /usr/local/bin/wkhtmltopdf
+
+RUN wget https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.4/wkhtmltox-0.12.4_linux-generic-amd64.tar.xz
+RUN tar xvf wkhtmltox-0.12.4_linux-generic-amd64.tar.xz
+RUN mv wkhtmltox/bin/wkhtmlto* /usr/bin/
+RUN ln -nfs /usr/bin/wkhtmltopdf /usr/local/bin/wkhtmltopdf
 
 RUN usermod -u 1000 www-data
 
